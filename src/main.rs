@@ -14,7 +14,7 @@ fn main() {
     let bf_instructions: Vec<char> = "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++.>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.>+++++++++++++++++++++++++++++++++.>".chars().collect();
     let mut bf_instruction_ptr: usize = 0;
 
-    let mut bf_memory: Vec<i32> = vec![0; 32];
+    let mut bf_memory: Vec<i64> = vec![0; 32];
     let mut bf_memory_ptr: usize = 0;
 
     let mut loop_start: Vec<usize> = Vec::new();
@@ -25,7 +25,11 @@ fn main() {
             '+' => bf_memory[bf_memory_ptr] = bf_memory[bf_memory_ptr] + 1,
             '-' => bf_memory[bf_memory_ptr] = bf_memory[bf_memory_ptr] - 1,
             '.' => {
-                let printed_char = std::char::from_u32(bf_memory[bf_memory_ptr] as u32).unwrap();
+                let printed_char =
+                    std::char::from_u32(bf_memory[bf_memory_ptr] as u32).expect(&format!(
+                        "Panic: Unknow Unicode {} at ptr {}.",
+                        bf_memory[bf_memory_ptr] as u32, bf_instruction_ptr
+                    ));
                 print!("{}", printed_char);
                 io::stdout().flush().unwrap();
             }
@@ -33,7 +37,7 @@ fn main() {
                 io::stdout().flush().unwrap();
                 let mut buf = String::new();
                 std::io::stdin().read_line(&mut buf).unwrap();
-                bf_memory[bf_memory_ptr] = (buf.chars().next().unwrap() as u32) as i32;
+                bf_memory[bf_memory_ptr] = buf.chars().next().unwrap() as i64;
             }
             '[' => {
                 if bf_memory[bf_memory_ptr] != 0 {
