@@ -20,7 +20,12 @@ fn main() {
     let mut loop_start: Vec<usize> = Vec::new();
     while bf_instruction_ptr < bf_instructions.len() {
         match bf_instructions[bf_instruction_ptr] {
-            '>' => bf_memory_ptr += 1,
+            '>' => {
+                bf_memory_ptr += 1;
+                if bf_memory_ptr >= bf_memory.len() {
+                    bf_memory.push(0);
+                }
+            }
             '<' => bf_memory_ptr -= 1,
             '+' => bf_memory[bf_memory_ptr] = bf_memory[bf_memory_ptr] + 1,
             '-' => bf_memory[bf_memory_ptr] = bf_memory[bf_memory_ptr] - 1,
