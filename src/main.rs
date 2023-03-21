@@ -17,7 +17,7 @@ fn main() {
     let mut bf_memory: Vec<i32> = vec![0; 32];
     let mut bf_memory_ptr: usize = 0;
 
-    let mut last_bracket_pos: Vec<usize> = Vec::new();
+    let mut loop_start: Vec<usize> = Vec::new();
     while bf_instruction_ptr < bf_instructions.len() {
         match bf_instructions[bf_instruction_ptr] {
             '>' => bf_memory_ptr += 1,
@@ -37,12 +37,12 @@ fn main() {
             }
             '[' => {
                 if bf_memory[bf_memory_ptr] != 0 {
-                    last_bracket_pos.push(bf_instruction_ptr);
+                    loop_start.push(bf_instruction_ptr);
                 }
             }
             ']' => {
                 if bf_memory[bf_memory_ptr] == 0 {
-                    bf_instruction_ptr = last_bracket_pos.pop().unwrap();
+                    bf_instruction_ptr = loop_start.pop().unwrap();
                 }
             }
             _ => {
