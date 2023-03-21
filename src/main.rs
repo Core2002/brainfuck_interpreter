@@ -26,10 +26,10 @@ fn main() {
             '-' => bf_memory[bf_memory_ptr] = bf_memory[bf_memory_ptr] - 1,
             '.' => {
                 let printed_char = std::char::from_u32(bf_memory[bf_memory_ptr] as u32).unwrap();
-                print!("{}", printed_char)
+                print!("{}", printed_char);
+                io::stdout().flush().unwrap();
             }
             ',' => {
-                print!("input char>");
                 io::stdout().flush().unwrap();
                 let mut buf = String::new();
                 std::io::stdin().read_line(&mut buf).unwrap();
