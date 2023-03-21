@@ -45,13 +45,14 @@ fn main() {
                     bf_instruction_ptr = loop_start.pop().unwrap();
                 }
             }
-            _ => {
+            '\u{26}' => {
                 print!("\n<{}> |", bf_memory_ptr);
                 for x in &bf_memory {
                     print!(" {} |", x)
                 }
                 println!();
             }
+            _ => (),
         }
         bf_instruction_ptr += 1;
     }
