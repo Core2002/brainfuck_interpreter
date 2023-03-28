@@ -11,13 +11,15 @@
 use std::io::{self, Write};
 
 fn main() {
-    let bf_instructions: Vec<char> = "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<.".chars().collect();
+    let src = "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<.";
+    let bf_instructions: Vec<char> = src.chars().collect();
     let mut bf_instruction_ptr: usize = 0;
 
     let mut bf_memory: Vec<i64> = vec![0; 32];
     let mut bf_memory_ptr: usize = 0;
 
-    let mut loop_start: Vec<usize> = Vec::new();
+    let bf_pp = find_parentheses_positions(src).unwrap();
+    // dbg!(&bf_pp);
     while bf_instruction_ptr < bf_instructions.len() {
         match bf_instructions[bf_instruction_ptr] {
             '>' => {
@@ -45,13 +47,33 @@ fn main() {
                 bf_memory[bf_memory_ptr] = buf.chars().next().unwrap() as i64;
             }
             '[' => {
-                if bf_memory[bf_memory_ptr] != 0 {
-                    loop_start.push(bf_instruction_ptr);
+                if bf_memory[bf_memory_ptr] == 0 {
+                    let mut flag = false;
+                    for pp in &bf_pp {
+                        if pp.0 == bf_instruction_ptr {
+                            bf_instruction_ptr = pp.1;
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if !flag {
+                        panic!("ERROR")
+                    }
                 }
             }
             ']' => {
                 if bf_memory[bf_memory_ptr] != 0 {
-                    bf_instruction_ptr = loop_start.pop().unwrap() - 1;
+                    let mut flag = false;
+                    for pp in &bf_pp {
+                        if pp.1 == bf_instruction_ptr {
+                            bf_instruction_ptr = pp.0;
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if !flag {
+                        panic!("ERROR")
+                    }
                 }
             }
             '\u{26}' => {
@@ -65,4 +87,24 @@ fn main() {
         }
         bf_instruction_ptr += 1;
     }
+}
+
+fn find_parentheses_positions(s: &str) -> Option<Vec<(usize, usize)>> {
+    let mut stack = vec![];
+    let mut pairs = vec![];
+    for (i, ch) in s.char_indices() {
+        if ch == '[' {
+            stack.push(i);
+        } else if ch == ']' {
+            if let Some(left_i) = stack.pop() {
+                pairs.push((left_i, i));
+            } else {
+                return None;
+            }
+        }
+    }
+    if !stack.is_empty() {
+        return None;
+    }
+    Some(pairs)
 }
