@@ -8,18 +8,20 @@
 // [ 	If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
 // ] 	If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.
 
-use std::io::{self, Write};
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+};
 
 fn main() {
     let src = "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<.";
     let bf_instructions: Vec<char> = src.chars().collect();
     let mut bf_instruction_ptr: usize = 0;
+    let bf_brackets: HashMap<usize, usize> = find_brackets(&bf_instructions);
 
     let mut bf_memory: Vec<i64> = vec![0; 32];
     let mut bf_memory_ptr: usize = 0;
 
-    let bf_pp = find_parentheses_positions(src).unwrap();
-    // dbg!(&bf_pp);
     while bf_instruction_ptr < bf_instructions.len() {
         match bf_instructions[bf_instruction_ptr] {
             '>' => {
@@ -48,32 +50,12 @@ fn main() {
             }
             '[' => {
                 if bf_memory[bf_memory_ptr] == 0 {
-                    let mut flag = false;
-                    for pp in &bf_pp {
-                        if pp.0 == bf_instruction_ptr {
-                            bf_instruction_ptr = pp.1;
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if !flag {
-                        panic!("ERROR")
-                    }
+                    bf_instruction_ptr = bf_brackets[&bf_instruction_ptr]
                 }
             }
             ']' => {
                 if bf_memory[bf_memory_ptr] != 0 {
-                    let mut flag = false;
-                    for pp in &bf_pp {
-                        if pp.1 == bf_instruction_ptr {
-                            bf_instruction_ptr = pp.0;
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if !flag {
-                        panic!("ERROR")
-                    }
+                    bf_instruction_ptr = bf_brackets[&bf_instruction_ptr]
                 }
             }
             '\u{26}' => {
@@ -89,22 +71,35 @@ fn main() {
     }
 }
 
-fn find_parentheses_positions(s: &str) -> Option<Vec<(usize, usize)>> {
-    let mut stack = vec![];
-    let mut pairs = vec![];
-    for (i, ch) in s.char_indices() {
-        if ch == '[' {
-            stack.push(i);
-        } else if ch == ']' {
-            if let Some(left_i) = stack.pop() {
-                pairs.push((left_i, i));
-            } else {
-                return None;
+fn find_brackets(src: &Vec<char>) -> HashMap<usize, usize> {
+    let mut bf_brackets: HashMap<usize, usize> = HashMap::new();
+    let mut i = 0;
+    while i < src.len() {
+        match src[i] {
+            '[' => {
+                let mut p = i;
+                let mut a = 0;
+                while p < src.len() {
+                    match src[p] {
+                        '[' => {
+                            a += 1;
+                        }
+                        ']' => {
+                            a -= 1;
+                            if a == 0 {
+                                bf_brackets.insert(i, p);
+                                bf_brackets.insert(p, i);
+                                break;
+                            }
+                        }
+                        _ => (),
+                    }
+                    p += 1;
+                }
             }
+            _ => (),
         }
+        i += 1;
     }
-    if !stack.is_empty() {
-        return None;
-    }
-    Some(pairs)
+    return bf_brackets;
 }
