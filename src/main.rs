@@ -73,33 +73,20 @@ fn main() {
 
 fn find_brackets(src: &Vec<char>) -> HashMap<usize, usize> {
     let mut bf_brackets: HashMap<usize, usize> = HashMap::new();
-    let mut i = 0;
-    while i < src.len() {
-        match src[i] {
+    let mut stack = Vec::new();
+    for (index, char) in src.iter().enumerate() {
+        match char {
             '[' => {
-                let mut p = i;
-                let mut a = 0;
-                while p < src.len() {
-                    match src[p] {
-                        '[' => {
-                            a += 1;
-                        }
-                        ']' => {
-                            a -= 1;
-                            if a == 0 {
-                                bf_brackets.insert(i, p);
-                                bf_brackets.insert(p, i);
-                                break;
-                            }
-                        }
-                        _ => (),
-                    }
-                    p += 1;
+                stack.push(index);
+            }
+            ']' => {
+                if let Some(start_index) = stack.pop() {
+                    bf_brackets.insert(start_index, index);
+                    bf_brackets.insert(index, start_index);
                 }
             }
             _ => (),
         }
-        i += 1;
     }
     return bf_brackets;
 }
