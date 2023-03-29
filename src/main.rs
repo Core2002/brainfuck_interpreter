@@ -10,11 +10,24 @@
 
 use std::{
     collections::HashMap,
-    io::{self, Write, stdin, Read},
+    env, fs,
+    io::{self, stdin, Read, Write},
 };
 
 fn main() {
-    let src = "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<.";
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() > 1 {
+        let filename = &args[1];
+        let contents = fs::read_to_string(filename).expect("Could not read file");
+        run(&contents);
+    } else {
+        println!("Please specify the file to read. For example:");
+        println!("brainfuck_interpreter hello.bf");
+    }
+}
+
+fn run(src: &String) {
     let bf_instructions: Vec<char> = src.chars().collect();
     let mut bf_instruction_ptr: usize = 0;
     let bf_brackets: HashMap<usize, usize> = find_brackets(&bf_instructions);
