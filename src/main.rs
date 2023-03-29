@@ -10,7 +10,7 @@
 
 use std::{
     collections::HashMap,
-    io::{self, Write},
+    io::{self, Write, stdin, Read},
 };
 
 fn main() {
@@ -44,9 +44,9 @@ fn main() {
             }
             ',' => {
                 io::stdout().flush().unwrap();
-                let mut buf = String::new();
-                std::io::stdin().read_line(&mut buf).unwrap();
-                bf_memory[bf_memory_ptr] = buf.chars().next().unwrap() as i64;
+                let mut ib = [0u8];
+                stdin().read_exact(&mut ib).unwrap();
+                bf_memory[bf_memory_ptr] = ib[0] as i64;
             }
             '[' => {
                 if bf_memory[bf_memory_ptr] == 0 {
