@@ -3,13 +3,13 @@
 
 ------
 
+[[English]](./README.md) [[简体中文]](./README.zh-CN.md)
+
 ## Introduction
 
-Brainfuck is an esoteric programming language created in 1993 by Urban Müller. It consists of only eight commands, each of which is represented by a single character. The language is designed to challenge and amuse programmers, rather than to be suitable for practical use.
+Brainfuck is an esoteric programming language created in 1993 by Urban Müller. It consists of only eight commands, each of which is represented by a single character.
 
 ## Grammar
-
-To run the interpreter, simply compile the Rust code and run the resulting binary file. The interpreter takes a string of Brainfuck code as input and executes it.
 
 The following is a list of the eight Brainfuck commands and their corresponding meanings:
 
@@ -34,13 +34,16 @@ The interpreter uses a vector to represent the Brainfuck memory, which is initia
 
 Here is an example of a Brainfuck program that prints "Hello World!":
 
+`hello.bf`
+
 ```brainfuck
 ++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++++.>.+++.------.--------.<<+.<.
 ```
 
 When executed by the interpreter, this program outputs the following text:
 
-```text
+```shell
+root@VM114541:~# brainfuck_interpreter hello.bf
 Hello World!
 ```
 
